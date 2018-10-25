@@ -1,0 +1,71 @@
+{% extends '../base.html' %}
+
+{% block css_link %}
+<link href="/assets/css/board.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block content %}
+			<div id="board">
+				<form id="search_form" action="" method="post">{% csrf_token %}
+					<input type="text" id="kwd" name="kwd" value="">
+					<input type="submit" value="찾기">
+				</form>
+
+				<table class="tbl-ex">
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>글쓴이</th>
+						<th>조회수</th>
+						<th>작성일</th>
+						<th>&nbsp;</th>
+					</tr>
+					{% for board in board_list %}
+					<tr>
+						<td>{{board.listnum}}</td>
+						<td style="text-align:left">
+							<script>
+								var text = "";
+								for(var i=1; i<={{board.depth}};i++){
+									document.write("&nbsp;&nbsp;&nbsp;")
+								}
+							</script>
+							<img src="/assets/images/right-arrow.png" style="height:13px; width:{{board.depth}};">
+							<a href="/board/view?no={{board.id}}">{{board.title}}</a>
+						</td>
+						<td>{{board.name}}</td>
+						<td>{{board.hit}}</td>
+						<td>{{board.reg_date}}</td>
+						{% if request.session.authuser is None %}
+						{% else %}
+						<td><a href="/board/delete?no={{board.id}}" class="del"><img src="/assets/images/recycle.png" alt="Flowers in Chania"></a></td>
+						{% endif %}
+					</tr>
+					{% endfor %}
+				</table>
+
+
+				<div class="pager">
+					<ul>
+						{% if page_list.startpage <= page_list.pageblock %}
+						{% else %}
+						<li><a href="/board/?pagenum={{page_list.previous_page}}">◀</a></li>
+						{% endif %}
+						{% for page in page_list.pagenumber %}
+						<li><a href="/board/?pagenum={{page}}">{{page}}</a></li>
+						{% endfor %}
+						{% if page_list.endpage < page_list.pagecount %}
+						<li><a href="/board/?pagenum={{page_list.next_page}}">▶</a></li>
+						{% else %}
+						{% endif %}
+					</ul>
+				</div>				
+				<div class="bottom">
+					{% if request.session.authuser is None %}
+					{% else %}
+					<a href="/board/writeform" id="new-book">글쓰기</a>
+					{% endif %}
+
+				</div>				
+			</div>
+	{% endblock %}
